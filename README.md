@@ -1,6 +1,6 @@
 # Recipe app
 ## Introduction
-Feel free to [use this repository as a template](../../generate) (Please don't fork!) or start from scractch.
+Feel free to [use this repository as a template](../../generate) (Please don't fork!) or start from scratch.
 
 The requirement is to build and end to end application consisting of a Typescript, React webapp, a Typescript API and a data store of your choice.
 The spec below defines 3 user stories all with acceptance criteria. Do your best to interpret them and implement them. If you feel you're missing context, drop an email to tech-test@sero.life.
