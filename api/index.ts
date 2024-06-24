@@ -4,6 +4,7 @@ import express from "express";
 import RecipeRouter from "./v1/recipes";
 import AuthRouter from "./v1/auth";
 import UserRouter from "./v1/user";
+import { connectToDb } from "./helpers/connectToDb";
 
 const app = express();
 
@@ -19,8 +20,13 @@ export class Application {
     app.use(json());
   }
 
-  listen() {
-    app.listen(3080, () => console.log("Listening on port 3080"));
+  async listen() {
+    const connected = connectToDb();
+    if (connected) {
+      app.listen(3080, () => console.log("Listening on port 3080"));
+    } else {
+      process.exit(0);
+    }
   }
 
   setupControllers() {
