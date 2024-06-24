@@ -1,10 +1,10 @@
 import { BaseError, MissingDetails } from "../constants";
 import { AuthorisedRequest, CustomRequest,  RecipeQuery, } from "../types";
 import { checkToken } from "../helpers/checkToken";
-import express, { Response } from "express";
+import { Response, Router } from "express";
 import { Recipe } from "../models/recipe.model";
 
-const router = express.Router();
+const RecipeRouter = Router();
 
 // Base Functions 
 async function findRecipes(matchQuery:RecipeQuery) {
@@ -18,7 +18,7 @@ async function searchRecipesByIngredient(ingredient_name: string) {
 }
 
 // GET recipes by user_id
-router.get('/user/:id', async (req: CustomRequest, res: Response) => {
+RecipeRouter.get('/user/:id', async (req: CustomRequest, res: Response) => {
     try {
         if (req && req?.params && req?.params.id) {
             const recipes = findRecipes({ user_id: req.params.id });
@@ -35,7 +35,7 @@ router.get('/user/:id', async (req: CustomRequest, res: Response) => {
     }
 })
 // GET recipe by id
-router.get('/:id', async (req: CustomRequest, res: Response) => {
+RecipeRouter.get('/:id', async (req: CustomRequest, res: Response) => {
     try {
         if (req && req?.params && req?.params.id) {
             const recipes = findRecipes({ _id: req.params.id });
@@ -53,7 +53,7 @@ router.get('/:id', async (req: CustomRequest, res: Response) => {
 })
 
 // Search recipes by ingredient name
-router.get('/search/:ingredient_name', async (req: CustomRequest, res: Response) => {
+RecipeRouter.get('/search/:ingredient_name', async (req: CustomRequest, res: Response) => {
     try {
         if (req && req?.params && req?.params.ingredient_name) {
             const recipes = searchRecipesByIngredient(req.params.ingredient_name);
@@ -71,7 +71,7 @@ router.get('/search/:ingredient_name', async (req: CustomRequest, res: Response)
 })
 
 // Create recipe
-router.post('/', checkToken, async (req: AuthorisedRequest, res: Response) => {
+RecipeRouter.post('/', checkToken, async (req: AuthorisedRequest, res: Response) => {
     try {
         if (req && req?.body && req?.userId) {
             const recipe = new Recipe({ ...req.body, user_id: req.userId });
@@ -93,4 +93,4 @@ router.post('/', checkToken, async (req: AuthorisedRequest, res: Response) => {
     }
 })
 
-module.exports = router;
+export default RecipeRouter;

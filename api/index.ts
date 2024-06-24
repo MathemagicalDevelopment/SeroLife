@@ -1,6 +1,9 @@
 import { json, urlencoded } from "body-parser";
 import cors from "cors";
-import express, { Request, Response } from "express";
+import express from "express";
+import RecipeRouter from "./v1/recipes";
+import AuthRouter from "./v1/auth";
+import UserRouter from "./v1/user";
 
 const app = express();
 
@@ -21,18 +24,9 @@ export class Application {
   }
 
   setupControllers() {
-    app.get("/recipes", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app.get("/recipes/:id", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app.post("/recipes", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app.delete("/recipes/:id", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
+    app.use("/auth", AuthRouter);
+    app.use("/recipes", RecipeRouter);
+    app.use("/user", UserRouter);
     app;
   }
 }

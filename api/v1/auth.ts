@@ -4,15 +4,16 @@ import { hash } from "bcrypt";
 import { BaseError, MissingDetails } from "../constants";
 import { generateToken } from "../helpers/generateToken";
 import { isPasswordMatch } from "../helpers/isPasswordMatch";
-import { SuccessResponse, UserObject } from "../types"
+import {  UserObject } from "../types"
 import { createUser, findOneUser } from "./user";
-import express, { Request, Response } from "express"
-const router = express.Router();
+import { Request, Response, Router } from "express"
+
+const AuthRouter = Router()
 const salt: string = process.env.SALT;
 
 // Sign Up
 
-router.post('/', async (req: Request, res: Response) => {
+AuthRouter.post('/', async (req: Request, res: Response) => {
     try {
         if (req && req.body) {
             const validUserBody: UserObject & { password: string; passwordMatch: string; } = req.body;
@@ -52,7 +53,7 @@ router.post('/', async (req: Request, res: Response) => {
 
 // Login
 
-router.post('/login', async (req: Request, res: Response) => {
+AuthRouter.post('/login', async (req: Request, res: Response) => {
     try {
         if (req && req.body) {
             const validLoginBody: { username: string; password: string } = req.body;
@@ -91,3 +92,4 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 })
 
+export default AuthRouter;

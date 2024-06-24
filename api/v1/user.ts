@@ -4,10 +4,10 @@ import { Types } from "mongoose";
 import { BaseError, MissingDetails } from "../constants";
 import { checkToken } from "../helpers/checkToken";
 import { AuthorisedRequest, UserObject, UserQuery, UserUpdateObject } from "../types";
-import express, { Response } from "express";
+import  { Response, Router } from "express";
 import { User } from "../models/user.model";
 
-const router = express.Router();
+const UserRouter = Router();
 
 
 export async function findOneUser(matchQuery: UserQuery) {
@@ -27,7 +27,7 @@ export async function updateUser(matchQuery: UserQuery, data: UserUpdateObject) 
 
 // GET User
 
-router.get('/:id', checkToken, async (req: AuthorisedRequest, res: Response) => {
+UserRouter.get('/:id', checkToken, async (req: AuthorisedRequest, res: Response) => {
     try {
         if (req && req?.params && req?.params.id && req?.token && req?.userId && req.params.id === req.userId) {
             const user = await findOneUser({ _id: req.params.id });
@@ -46,7 +46,7 @@ router.get('/:id', checkToken, async (req: AuthorisedRequest, res: Response) => 
 
 // Update favourite recipes
 
-router.put('/favourite/:id', checkToken, async (req: AuthorisedRequest, res: Response) => {
+UserRouter.put('/favourite/:id', checkToken, async (req: AuthorisedRequest, res: Response) => {
     try {
         if (req && req?.body && req?.params && req?.params?.id && req?.userId) {
             const user = await findOneUser({ _id: req.userId });
@@ -67,4 +67,4 @@ router.put('/favourite/:id', checkToken, async (req: AuthorisedRequest, res: Res
     }
 })
 
-module.exports = router;
+export default UserRouter;
