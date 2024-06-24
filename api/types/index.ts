@@ -35,7 +35,7 @@ export interface UserUpdateObject {
 export interface RecipeObject {
     _id: ObjectId;
     name: string;
-    chef_id: ObjectId;
+    user_id: ObjectId;
     created: Date;
     ingredients: [IngredientObject];
     method: string;
@@ -45,6 +45,13 @@ export type UserQuery = {
     _id?: ObjectId;
     name?: string;
 }
+
+export type RecipeQuery = {
+    _id?: ObjectId;
+    user_id?: ObjectId;
+    ingredient_name?: string;
+}
+
 type Params = { params?: { id?: ObjectId; ingredient_name?: string; } }
 
 export type CustomRequest = Request & Params
