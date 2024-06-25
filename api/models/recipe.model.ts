@@ -16,4 +16,4 @@ const recipeSchema = new Schema({
     method: { type: String, required: true }
 })
 
-export const Recipe = mongoose.model('Recipe', recipeSchema)
+export const Recipe = mongoose.model('Recipe', recipeSchema,'recipes')

@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 import { json, urlencoded } from "body-parser";
 import cors from "cors";
 import express from "express";
@@ -5,6 +7,7 @@ import RecipeRouter from "./v1/recipes";
 import AuthRouter from "./v1/auth";
 import UserRouter from "./v1/user";
 import { connectToDb } from "./helpers/connectToDb";
+console.log(require('dotenv').config())
 
 const app = express();
 
@@ -15,7 +18,12 @@ export class Application {
   }
 
   setupApplicationSettings() {
-    app.use(cors());
+    app.use(cors({
+  "origin": "*",
+  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+  "preflightContinue": false,
+  "optionsSuccessStatus": 204,
+}));
     app.use(urlencoded({ extended: false }));
     app.use(json());
   }

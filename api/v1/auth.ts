@@ -1,15 +1,14 @@
 // Functions
 
-import { hash } from "bcrypt";
-import { BaseError, MissingDetails } from "../constants";
+import { genSalt, hash } from "bcrypt";
+import { BaseError, MissingDetails, UnkownError } from "../constants";
 import { generateToken } from "../helpers/generateToken";
 import { isPasswordMatch } from "../helpers/isPasswordMatch";
-import {  UserObject } from "../types"
+import { UserObject } from "../types"
 import { createUser, findOneUser } from "./user";
 import { Request, Response, Router } from "express"
 
 const AuthRouter = Router()
-const salt: string = process.env.SALT;
 
 // Sign Up
 
@@ -18,23 +17,31 @@ AuthRouter.post('/', async (req: Request, res: Response) => {
         if (req && req.body) {
             const validUserBody: UserObject & { password: string; passwordMatch: string; } = req.body;
             if (validUserBody) {
+                console.log(req.body);
                 const { password, passwordMatch, name } = validUserBody;
                 if (password === passwordMatch) {
-
                     const userExists = await findOneUser({ name });
                     if (userExists !== null) {
                         return res.status(400).json({ success: false, message: 'Username taken' })
                     } else {
-                        hash(password, salt, async (err: any, hash: string) => {
+                        genSalt(10, (err, salt) => {
                             if (err) {
-                                return res.status(422).json({ success: false, message: 'Unable to process password, please try again using standard characters' });
+                                console.error('Failed to generate salt');
+                                return res.status(500).json({ success: false, message: UnkownError });
                             } else {
-                                const storeUser = await createUser({ name, password: hash, created: new Date() });
-                                if (storeUser) {
-                                    return res.status(200).json({ success: true, message: 'User Created' });
-                                } else {
-                                    return res.status(400).json({ success: false, message: 'Error creating User' })
-                                }
+                                hash(password, salt, async (err: any, hash: string) => {
+                                    if (err) {
+                                        console.log(err);
+                                        return res.status(422).json({ success: false, message: 'Unable to process password, please try again using standard characters' });
+                                    } else {
+                                        const storeUser = await createUser({ name, password: hash, created: new Date() });
+                                        if (storeUser) {
+                                            return res.status(200).json({ success: true, message: 'User Created' });
+                                        } else {
+                                            return res.status(400).json({ success: false, message: 'Error creating User' })
+                                        }
+                                    }
+                                })
                             }
                         })
                     }
@@ -56,20 +63,12 @@ AuthRouter.post('/', async (req: Request, res: Response) => {
 AuthRouter.post('/login', async (req: Request, res: Response) => {
     try {
         if (req && req.body) {
-            const validLoginBody: { username: string; password: string } = req.body;
+            const validLoginBody: { name: string; password: string } = req.body;
             if (validLoginBody) {
-                const { password, username } = validLoginBody;
-                let hashed:string;
-                   hash(password, salt, async (err: any, hash: string) => {
-                            if (err) {
-                                return res.status(422).json({ success: false, message: 'Unable to process password, please try again using standard characters' });
-                            } else {
-                                hashed=hash;
-                            }
-                        })
-                const account = await findOneUser({ name: username });
-                if (hashed && account&& account._id) {
-                    const passwordsMatch = await isPasswordMatch(account.password, password);
+                const { password, name } = validLoginBody;
+                const account = await findOneUser({ name });
+                if (account && account._id) {
+                    const passwordsMatch = await isPasswordMatch(password, account.password);
                     if (passwordsMatch) {
                         const token = generateToken(account._id);
                         return res.status(200).json({ success: true, message: 'User Authenticated', token })
@@ -81,7 +80,6 @@ AuthRouter.post('/login', async (req: Request, res: Response) => {
                 }
             } else {
                 return res.status(400).json({ success: false, message: MissingDetails })
-
             }
         } else {
             return res.status(422).json({ success: false, message: MissingDetails })

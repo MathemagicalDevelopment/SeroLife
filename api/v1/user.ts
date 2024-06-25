@@ -12,6 +12,9 @@ const UserRouter = Router();
 
 export async function findOneUser(matchQuery: UserQuery) {
     const user = await User.findOne(matchQuery)
+    console.log(matchQuery);
+    const aaron = await User.findOne({name:'aaron'});
+    console.log(aaron);
     return user;
 }
 

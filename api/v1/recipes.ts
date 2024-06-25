@@ -21,7 +21,7 @@ async function searchRecipesByIngredient(ingredient_name: string) {
 RecipeRouter.get('/user/:id', async (req: CustomRequest, res: Response) => {
     try {
         if (req && req?.params && req?.params.id) {
-            const recipes = findRecipes({ user_id: req.params.id });
+            const recipes = await findRecipes({ user_id: req.params.id });
             if (recipes) {
                 return res.status(200).json({ success: true, recipes })
             } else {
@@ -74,14 +74,10 @@ RecipeRouter.get('/search/:ingredient_name', async (req: CustomRequest, res: Res
 RecipeRouter.post('/', checkToken, async (req: AuthorisedRequest, res: Response) => {
     try {
         if (req && req?.body && req?.userId) {
-            const recipe = new Recipe({ ...req.body, user_id: req.userId });
+            const {name,method,ingredients} = req.body.recipe;
+            const recipe = await Recipe.create({name,method,ingredients,user_id:req.userId})
             if (recipe) {
-                const saved = await recipe.save();
-                if (saved) {
                     return res.status(200).json({ success: true, message: 'Recipe stored' })
-                } else {
-                    return res.status(500).json({ success: false, message: 'Unable to save recipe' })
-                }
             } else {
                 return res.status(422).json({ success: false, message: MissingDetails });
             }
