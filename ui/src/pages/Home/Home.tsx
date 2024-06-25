@@ -12,6 +12,7 @@ import RecipeForm from "../../components/forms/RecipeForm";
 export const Home = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState<string>('');
+  const [searchType, setSearchType] = useState<string>('name');
   const [userRecipes, setUserRecipes] = useState<Recipe[] | undefined>();
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[] | undefined>();
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -30,7 +31,9 @@ export const Home = () => {
   }
 
   useEffect(() => {
-    handleStartUp();
+    if (!userRecipes) {
+      handleStartUp();
+    }
   }, [])
 
   const showCreateRecipe = (event: React.MouseEvent) => {
@@ -43,13 +46,30 @@ export const Home = () => {
     setSearchValue(event.target.value)
   }
 
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
+    const { value } = event.target;
+    setSearchType(value);
+  }
+
   useEffect(() => {
     if (searchValue && userRecipes && searchValue.length > 0) {
-      setFilteredRecipes(userRecipes.filter(({ name }) => name.toLowerCase().includes(searchValue.toLowerCase())));
+      if (searchType === 'name') {
+        setFilteredRecipes(userRecipes.filter(({ name }) => name.toLowerCase().includes(searchValue.toLowerCase())));
+      } else if (searchType === 'ingredient') {
+        setFilteredRecipes(userRecipes.filter(({ ingredients }) => {
+          let hasMatch: boolean = false;
+          ingredients.forEach(({ name }) => {
+            if (name.toLowerCase().includes(searchValue.toLowerCase())) {
+              hasMatch = true;
+            }
+          })
+          return hasMatch;
+        }))
+      }
     } else {
       setFilteredRecipes(userRecipes);
     }
-  }, [searchValue, userRecipes])
+  }, [searchValue, searchType, userRecipes])
 
 
   return (
@@ -61,9 +81,15 @@ export const Home = () => {
       <div className="row center">
         <form>
           <label>
-            Recipe name search:
+            Recipe search:
             <input type="search" value={searchValue} onChange={updateSearch} placeholder="Recipe name search" />
           </label>
+          <label>
+            Search by:
+            <select onChange={handleSelectChange} value={searchType}>
+              <option value="name">Name</option>
+              <option value="ingredient">Ingredient</option>
+            </select>          </label>
         </form>
       </div>
       <div className="row center">
