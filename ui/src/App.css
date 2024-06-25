@@ -1,0 +1,54 @@
+html,
+body {
+  margin: 0;
+}
+ @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #FFF;
+  border-bottom-color: #FF3D00;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotate 1s linear infinite;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  margin: 8px 0px;
+}
+
+.row.center {
+  align-items: center;
+  justify-content: center;
+}
+
+.page-container {
+  border: solid black 2px;
+  background-color: lightblue;
+}
+
+.card{
+  margin: 48px 0px;
+  padding: 16px;
+  background-color: aliceblue;
+  width: 400px;
+  border-radius: 8px;
+}
+.list-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
